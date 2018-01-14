@@ -1,0 +1,7 @@
+*~
+pkg
+src
+!vendor/src
+*.json
+bin/wof-*
+*.db
