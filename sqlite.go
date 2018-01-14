@@ -1,4 +1,4 @@
-package search
+package sqlite
 
 // https://sqlite.org/fts3.html
 // https://www.sqlite.org/fts5.html
@@ -9,17 +9,18 @@ import (
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/whosonfirst/go-whosonfirst-markdown"
+	"github.com/whosonfirst/go-whosonfirst-markdown/search"
 	_ "log"
 	"strings"
 )
 
 type SQLiteIndexer struct {
-	Indexer
+	search.Indexer
 	conn *sql.DB
 	dsn  string
 }
 
-func NewSQLiteIndexer(dsn string) (Indexer, error) {
+func NewSQLiteIndexer(dsn string) (search.Indexer, error) {
 
 	// It seems likely to me that once we understand how this works
 	// we will replace most of the code below with go-whosonfirst-sqlite
@@ -127,7 +128,7 @@ func (i *SQLiteIndexer) Close() error {
 	return i.conn.Close()
 }
 
-func (i *SQLiteIndexer) Query(q *SearchQuery) (interface{}, error) {
+func (i *SQLiteIndexer) Query(q *search.SearchQuery) (interface{}, error) {
 
 	conn, err := i.Conn()
 
@@ -146,9 +147,9 @@ func (i *SQLiteIndexer) Query(q *SearchQuery) (interface{}, error) {
 	return rows, nil
 }
 
-func (i *SQLiteIndexer) IndexDocument(doc *markdown.Document) (*SearchDocument, error) {
+func (i *SQLiteIndexer) IndexDocument(doc *markdown.Document) (*search.SearchDocument, error) {
 
-	search_doc, err := NewSearchDocument(doc)
+	search_doc, err := search.NewSearchDocument(doc)
 
 	if err != nil {
 		return nil, err
@@ -184,7 +185,7 @@ func (i *SQLiteIndexer) IndexDocument(doc *markdown.Document) (*SearchDocument, 
 	return search_doc, nil
 }
 
-func (i *SQLiteIndexer) IndexDocumentsTable(ctx context.Context, search_doc *SearchDocument) error {
+func (i *SQLiteIndexer) IndexDocumentsTable(ctx context.Context, search_doc *search.SearchDocument) error {
 
 	select {
 
@@ -237,7 +238,7 @@ func (i *SQLiteIndexer) IndexDocumentsTable(ctx context.Context, search_doc *Sea
 	}
 }
 
-func (i *SQLiteIndexer) IndexDocumentsAuthorsTable(ctx context.Context, search_doc *SearchDocument) error {
+func (i *SQLiteIndexer) IndexDocumentsAuthorsTable(ctx context.Context, search_doc *search.SearchDocument) error {
 
 	select {
 
@@ -289,7 +290,7 @@ func (i *SQLiteIndexer) IndexDocumentsAuthorsTable(ctx context.Context, search_d
 	}
 }
 
-func (i *SQLiteIndexer) IndexDocumentsLinksTable(ctx context.Context, search_doc *SearchDocument) error {
+func (i *SQLiteIndexer) IndexDocumentsLinksTable(ctx context.Context, search_doc *search.SearchDocument) error {
 
 	select {
 
@@ -343,7 +344,7 @@ func (i *SQLiteIndexer) IndexDocumentsLinksTable(ctx context.Context, search_doc
 	}
 }
 
-func (i *SQLiteIndexer) IndexDocumentsSearchTable(ctx context.Context, search_doc *SearchDocument) error {
+func (i *SQLiteIndexer) IndexDocumentsSearchTable(ctx context.Context, search_doc *search.SearchDocument) error {
 
 	select {
 

@@ -6,8 +6,8 @@ prep:
 
 self:   prep
 	if test -s src; then rm -rf src; fi
-	mkdir -p src/github.com/whosonfirst/go-whosonfirst-markdown-search
-	cp *.go src/github.com/whosonfirst/go-whosonfirst-markdown-search/
+	mkdir -p src/github.com/whosonfirst/go-whosonfirst-markdown-sqlite
+	cp *.go src/github.com/whosonfirst/go-whosonfirst-markdown-sqlite/
 	cp -r vendor/* src/
 
 rmdeps:
@@ -17,12 +17,8 @@ build:	fmt bin
 
 deps:   
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-markdown"
-	@GOPATH=$(GOPATH) go get -u "github.com/blevesearch/bleve"
 	@GOPATH=$(GOPATH) go get -u "github.com/mattn/go-sqlite3"
 	@GOPATH=$(GOPATH) go install "github.com/mattn/go-sqlite3"
-	if test ! -d src/gopkg.in; then mkdir -p src/gopkg.in; fi
-	mv src/github.com/whosonfirst/go-whosonfirst-markdown/vendor/gopkg.in/russross src/gopkg.in
-	mv src/github.com/whosonfirst/go-whosonfirst-markdown/vendor/github.com/shurcooL src/github.com/
 
 vendor-deps: rmdeps deps
 	if test ! -d vendor; then mkdir vendor; fi
@@ -37,4 +33,4 @@ fmt:
 
 bin: 	rmdeps self
 	rm -rf bin/*
-	@GOPATH=$(shell pwd) go build -o bin/wof-markdown-search cmd/wof-markdown-search.go
+	@GOPATH=$(shell pwd) go build -o bin/wof-markdown-sqlite cmd/wof-markdown-sqlite.go
