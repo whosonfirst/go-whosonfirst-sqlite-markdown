@@ -8,6 +8,7 @@ self:   prep
 	if test -s src; then rm -rf src; fi
 	mkdir -p src/github.com/whosonfirst/go-whosonfirst-sqlite-markdown
 	cp *.go src/github.com/whosonfirst/go-whosonfirst-sqlite-markdown/
+	cp -r tables src/github.com/whosonfirst/go-whosonfirst-sqlite-markdown/
 	cp -r vendor/* src/
 
 rmdeps:
@@ -32,6 +33,7 @@ vendor-deps: rmdeps deps
 
 fmt:
 	go fmt cmd/*.go
+	go fmt tables/*.go
 	go fmt *.go
 
 bin: 	rmdeps self

@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"github.com/whosonfirst/go-whosonfirst-markdown"
+	"github.com/whosonfirst/go-whosonfirst-markdown-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-markdown/parser"
 	"github.com/whosonfirst/go-whosonfirst-markdown/search"
-	"github.com/whosonfirst/go-whosonfirst-markdown-sqlite"
 	"log"
 )
 
@@ -16,11 +16,11 @@ func main() {
 
 	flag.Parse()
 
-		idx, err := sqlite.NewSQLiteIndexer(*dsn)
+	idx, err := sqlite.NewSQLiteIndexer(*dsn)
 
-		if err != nil {
-			log.Fatal(err)
-		}
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	opts := parser.DefaultParseOptions()
 

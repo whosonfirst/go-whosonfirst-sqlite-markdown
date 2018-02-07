@@ -1,4 +1,6 @@
-package sqlite
+package markdown
+
+// THIS IS DEPRECATED AND WILL BE REMOVED ASAP
 
 // https://sqlite.org/fts3.html
 // https://www.sqlite.org/fts5.html
