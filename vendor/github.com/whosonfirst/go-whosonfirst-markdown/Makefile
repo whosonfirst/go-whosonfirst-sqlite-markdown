@@ -49,6 +49,7 @@ fmt:
 
 bin: 	rmdeps self
 	rm -rf bin/*
-	@GOPATH=$(shell pwd) go build -o bin/wof-markdown-index cmd/wof-markdown-index.go
 	@GOPATH=$(shell pwd) go build -o bin/wof-markdown-parse cmd/wof-markdown-parse.go
+	@GOPATH=$(shell pwd) go build -o bin/wof-md2feed cmd/wof-md2feed.go	
 	@GOPATH=$(shell pwd) go build -o bin/wof-md2html cmd/wof-md2html.go
+	@GOPATH=$(shell pwd) go build -o bin/wof-md2idx cmd/wof-md2idx.go

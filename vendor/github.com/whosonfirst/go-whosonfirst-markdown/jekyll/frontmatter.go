@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"log"
 	"text/template"
+	"time"
 )
 
 var fm_template *template.Template
@@ -16,7 +17,7 @@ layout: {{ .Layout }}
 permalink: {{ .Permalink }}
 published: {{ .Published }}
 title: {{ .Title }}
-date: {{ .Date }}
+date: {{ if .Date }}{{ .Date }}{{ end }}
 category: {{ .Category}}
 excerpt: {{ .Excerpt }}
 authors: {{ .Authors }}
@@ -40,7 +41,7 @@ type FrontMatter struct {
 	Published bool
 	// out-of-the-box
 	Category string
-	Date     string
+	Date     *time.Time
 	// custom
 	Title   string
 	Excerpt string
@@ -75,7 +76,7 @@ func EmptyFrontMatter() *FrontMatter {
 		Published: false,
 		Authors:   make([]string, 0),
 		Tags:      make([]string, 0),
-		Date:      "",
+		Date:      nil,
 		Permalink: "",
 	}
 

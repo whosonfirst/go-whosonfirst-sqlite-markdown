@@ -11,21 +11,23 @@ import (
 )
 
 type HTMLOptions struct {
-	Mode   string
-	Input  string
-	Output string
-	Header *template.Template
-	Footer *template.Template
+	Mode      string
+	Input     string
+	Output    string
+	Header    string
+	Footer    string
+	Templates *template.Template
 }
 
 func DefaultHTMLOptions() *HTMLOptions {
 
 	opts := HTMLOptions{
-		Mode:   "files",
-		Input:  "index.md",
-		Output: "index.html",
-		Header: nil,
-		Footer: nil,
+		Mode:      "files",
+		Input:     "index.md",
+		Output:    "index.html",
+		Header:    "",
+		Footer:    "",
+		Templates: nil,
 	}
 
 	return &opts
@@ -38,8 +40,9 @@ type nopCloser struct {
 type WOFRenderer struct {
 	bf          *blackfriday.HTMLRenderer
 	frontmatter *jekyll.FrontMatter
-	header      *template.Template
-	footer      *template.Template
+	header      string
+	footer      string
+	templates   *template.Template
 }
 
 func (r *WOFRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering bool) blackfriday.WalkStatus {
@@ -55,12 +58,19 @@ func (r *WOFRenderer) RenderNode(w io.Writer, node *blackfriday.Node, entering b
 
 func (r *WOFRenderer) RenderHeader(w io.Writer, ast *blackfriday.Node) {
 
-	if r.header == nil {
+	if r.templates == nil || r.header == "" {
 		r.bf.RenderHeader(w, ast)
 		return
 	}
 
-	err := r.header.Execute(w, r.frontmatter)
+	t := r.templates.Lookup(r.header)
+
+	if t == nil {
+		log.Printf("Invalid or missing template '%s'\n", r.header)
+		return
+	}
+
+	err := t.Execute(w, r.frontmatter)
 
 	if err != nil {
 		log.Println(err)
@@ -69,17 +79,23 @@ func (r *WOFRenderer) RenderHeader(w io.Writer, ast *blackfriday.Node) {
 
 func (r *WOFRenderer) RenderFooter(w io.Writer, ast *blackfriday.Node) {
 
-	if r.header == nil {
+	if r.templates == nil || r.footer == "" {
 		r.bf.RenderFooter(w, ast)
 		return
 	}
 
-	err := r.footer.Execute(w, r.frontmatter)
+	t := r.templates.Lookup(r.footer)
+
+	if t == nil {
+		log.Printf("Invalid or missing template '%s'\n", r.footer)
+		return
+	}
+
+	err := t.Execute(w, r.frontmatter)
 
 	if err != nil {
 		log.Println(err)
 	}
-
 }
 
 func (nopCloser) Close() error { return nil }
@@ -101,6 +117,7 @@ func RenderHTML(d *markdown.Document, opts *HTMLOptions) (io.ReadCloser, error) 
 		frontmatter: d.FrontMatter,
 		header:      opts.Header,
 		footer:      opts.Footer,
+		templates:   opts.Templates,
 	}
 
 	unsafe := blackfriday.Run(d.Body.Bytes(), blackfriday.WithRenderer(&r))

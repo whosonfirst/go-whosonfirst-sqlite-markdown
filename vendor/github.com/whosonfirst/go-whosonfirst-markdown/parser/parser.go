@@ -53,7 +53,7 @@ func ParseFile(path string, opts *ParseOptions) (*jekyll.FrontMatter, *markdown.
 		return nil, nil, err
 	}
 
-	if fm.Date == "" {
+	if fm.Date == nil {
 
 		re, err := regexp.Compile(`.*\/(\d{4})\/(\d{2})\/(\d{2})\/.*`)
 
@@ -70,7 +70,14 @@ func ParseFile(path string, opts *ParseOptions) (*jekyll.FrontMatter, *markdown.
 			dd := m[0][3]
 
 			dt := fmt.Sprintf("%s-%s-%s", yyyy, mm, dd)
-			fm.Date = dt
+
+			t, err := time.Parse("2006-01-02", dt)
+
+			if err != nil {
+				return nil, nil, err
+			}
+
+			fm.Date = &t
 		} else {
 
 			info, err := times.Stat(abs_path)
@@ -87,38 +94,25 @@ func ParseFile(path string, opts *ParseOptions) (*jekyll.FrontMatter, *markdown.
 				t = info.ChangeTime() // not an awesome solution but what else can we do...
 			}
 
-			dt := t.Format("2006-01-02")
-			fm.Date = dt
+			fm.Date = &t
 		}
 	}
 
 	if fm.Permalink == "" {
 
-		// THIS IS ALL DEPRECATED
+		re, err := regexp.Compile(`.*(\/(?:\d{4})\/(?:\d{2})\/(?:\d{2})\/.*)`)
 
-		/*
-			fname := filepath.Base(abs_path)
+		if err != nil {
+			return nil, nil, err
+		}
 
-			if fname != opts.Input {
-				return nil, nil
-			}
+		m := re.FindAllStringSubmatch(abs_path, 1)
 
-			root := filepath.Dir(abs_path)
-
-			parts := strings.Split(root, "/")
-			count := len(parts)
-
-			yyyy := parts[(count-1)-3]
-			mm := parts[(count-1)-2]
-			dd := parts[(count-1)-1]
-			post := parts[(count - 1)]
-
-			uri := fmt.Sprintf("/blog/%s/%s/%s/%s/", yyyy, mm, dd, post)
-		*/
-
-		// END OF THIS IS ALL DEPRECATED
-
-		// fm.Permalink = uri // FIX ME
+		if len(m) == 1 {
+			rel_path := m[0][1]
+			permalink := filepath.Dir(rel_path)
+			fm.Permalink = permalink + "/"
+		}
 	}
 
 	return fm, body, nil
@@ -172,7 +166,16 @@ func Parse(md io.ReadCloser, opts *ParseOptions) (*jekyll.FrontMatter, *markdown
 				case "category":
 					fm.Category = string2string(value)
 				case "date":
-					fm.Date = string2string(value)
+
+					dt := string2string(value)
+					t, err := time.Parse("2006-01-02", dt)
+
+					if err != nil {
+						return nil, nil, err
+					}
+
+					fm.Date = &t
+
 				case "excerpt":
 					fm.Excerpt = string2string(value)
 				case "image":
