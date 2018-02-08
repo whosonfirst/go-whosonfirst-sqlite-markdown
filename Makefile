@@ -17,12 +17,14 @@ rmdeps:
 build:	fmt bin
 
 deps:   
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-index"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-log"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-markdown"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-sqlite"
 	rm -rf src/github.com/mattn
 	rm -rf src/github.com/shaxbee
-	# rm -rf src/github.com/whosonfirst/go-whosonfirst-sqlite/vendor/github.com/whosonfirst/go-whosonfirst-log
-	# rm -rf src/github.com/whosonfirst/go-whosonfirst-index/vendor/github.com/whosonfirst/go-whosonfirst-sqlite
+	rm -rf src/github.com/whosonfirst/go-whosonfirst-sqlite/vendor/github.com/whosonfirst/go-whosonfirst-log
+	rm -rf src/github.com/whosonfirst/go-whosonfirst-index/vendor/github.com/whosonfirst/go-whosonfirst-sqlite
 
 vendor-deps: rmdeps deps
 	if test ! -d vendor; then mkdir vendor; fi
@@ -38,4 +40,4 @@ fmt:
 
 bin: 	rmdeps self
 	rm -rf bin/*
-	@GOPATH=$(shell pwd) go build -o bin/wof-markdown-sqlite cmd/wof-markdown-sqlite.go
+	@GOPATH=$(shell pwd) go build -o bin/wof-sqlite-index-markdown cmd/wof-sqlite-index-markdown.go
