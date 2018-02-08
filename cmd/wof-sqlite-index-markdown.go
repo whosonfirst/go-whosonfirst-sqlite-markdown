@@ -13,8 +13,8 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/index"
 	"io"
-	// golog "log"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -24,10 +24,12 @@ func main() {
 	valid_modes := strings.Join(wof_index.Modes(), ",")
 	desc_modes := fmt.Sprintf("The mode to use importing data. Valid modes are: %s.", valid_modes)
 
-	mode := flag.String("mode", "files", desc_modes)
+	mode := flag.String("mode", "directory", desc_modes)
 
 	driver := flag.String("driver", "sqlite3", "")
 	var dsn = flag.String("dsn", "index.db", "")
+
+	var input = flag.String("input", "index.md", "What you expect the input Markdown file to be called")
 
 	all := flag.Bool("all", false, "Index all tables")
 	documents := flag.Bool("documents", false, "Index the 'documents' table")
@@ -119,6 +121,10 @@ func main() {
 
 		if err != nil {
 			return nil, err
+		}
+
+		if filepath.Base(path) != *input {
+			return nil, nil
 		}
 
 		opts := parser.DefaultParseOptions()
