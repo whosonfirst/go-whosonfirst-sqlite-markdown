@@ -57,8 +57,6 @@ func (t *DocumentsTable) Schema() string {
 
 	CREATE INDEX documents_by_date ON %s (date);
 	CREATE INDEX documents_by_body ON %s (body);
-
-	CREATE VIRTUAL TABLE %s_search USING fts4(id, title, category, body, code);
 	`
 
 	// this is a bit stupid really... (20170901/thisisaaronland)
@@ -89,12 +87,6 @@ func (t *DocumentsTable) IndexDocument(db sqlite.Database, doc md.Document) erro
 	}
 
 	tx, err := conn.Begin()
-
-	if err != nil {
-		return err
-	}
-
-	is_current, err := b.IsCurrent()
 
 	if err != nil {
 		return err

@@ -23,6 +23,12 @@ func main() {
 	driver := flag.String("driver", "sqlite3", "")
 	var dsn = flag.String("dsn", "index.db", "")
 
+	all := flag.Bool("all", false, "Index all tables")
+	documents := flag.Bool("documents", false, "Index the 'documents' table")
+	authors := flag.Bool("authors", false, "Index the 'documents_authors' table")
+	links := flag.Bool("links", false, "Index the 'documents_links' table")
+	search := flag.Bool("search", false, "Index the 'documents_search' table")
+
 	live_hard := flag.Bool("live-hard-die-fast", false, "Enable various performance-related pragmas at the expense of possible (unlikely) database corruption")
 	timings := flag.Bool("timings", false, "Display timings during and after indexing")
 	var procs = flag.Int("processes", (runtime.NumCPU() * 2), "The number of concurrent processes to index data with")
@@ -52,13 +58,45 @@ func main() {
 
 	// CHECK FLAGS HERE...
 
-	d, err := tables.NewDocumentsTableWithDatabase(db)
+	if *documents || *all {
+		docs, err := tables.NewDocumentsTableWithDatabase(db)
 
-	if err != nil {
-		logger.Fatal("failed to create documents' table because %s", err)
+		if err != nil {
+			logger.Fatal("failed to create documents' table because %s", err)
+		}
+
+		to_index = append(to_index, docs)
 	}
 
-	to_index = append(to_index, br)
+	if *links || *all {
+		docs_links, err := tables.NewDocumentsLinksTableWithDatabase(db)
+
+		if err != nil {
+			logger.Fatal("failed to create documents' table because %s", err)
+		}
+
+		to_index = append(to_index, docs_links)
+	}
+
+	if *authors || *all {
+		docs_authors, err := tables.NewDocumentsAuthorsTableWithDatabase(db)
+
+		if err != nil {
+			logger.Fatal("failed to create documents' table because %s", err)
+		}
+
+		to_index = append(to_index, docs_authors)
+	}
+
+	if *search || *all {
+		docs_search, err := tables.NewDocumentsSearchTableWithDatabase(db)
+
+		if err != nil {
+			logger.Fatal("failed to create documents' table because %s", err)
+		}
+
+		to_index = append(to_index, docs_search)
+	}
 
 	if len(to_index) == 0 {
 		logger.Fatal("You forgot to specify which (any) tables to index")
