@@ -1,7 +1,7 @@
 package main
 
 import (
-       "context"
+	"context"
 	"flag"
 	"fmt"
 	wof_index "github.com/whosonfirst/go-whosonfirst-index"
