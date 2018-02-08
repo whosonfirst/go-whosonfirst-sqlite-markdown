@@ -56,12 +56,12 @@ func (t *DocumentsTable) Schema() string {
 	       code TEXT
 	);
 
-	CREATE INDEX documents_by_date ON %s (date);
-	CREATE INDEX documents_by_body ON %s (body);
+	CREATE INDEX %s_by_date ON %s (date);
+	CREATE INDEX %s_by_body ON %s (body);
 	`
 
 	// this is a bit stupid really... (20170901/thisisaaronland)
-	return fmt.Sprintf(schema, t.Name(), t.Name(), t.Name(), t.Name())
+	return fmt.Sprintf(schema, t.Name(), t.Name(), t.Name(), t.Name(), t.Name())
 }
 
 func (t *DocumentsTable) InitializeTable(db sqlite.Database) error {

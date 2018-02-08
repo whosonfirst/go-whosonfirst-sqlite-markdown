@@ -24,6 +24,7 @@ deps:
 	rm -rf src/github.com/mattn
 	rm -rf src/github.com/shaxbee
 	rm -rf src/github.com/whosonfirst/go-whosonfirst-sqlite/vendor/github.com/whosonfirst/go-whosonfirst-log
+	rm -rf src/github.com/whosonfirst/go-whosonfirst-sqlite/vendor/github.com/whosonfirst/go-whosonfirst-index
 	rm -rf src/github.com/whosonfirst/go-whosonfirst-index/vendor/github.com/whosonfirst/go-whosonfirst-sqlite
 
 vendor-deps: rmdeps deps
