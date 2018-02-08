@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type Indexer interface {
@@ -21,7 +22,7 @@ type SearchDocument struct {
 	Category string
 	Tags     []string
 	Authors  []string
-	Date     string
+	Date     *time.Time
 	Links    map[string]*url.URL
 	Images   map[string]int
 	Body     []string

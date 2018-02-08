@@ -1,18 +1,21 @@
 package main
 
 import (
+       "context"
 	"flag"
+	"fmt"
 	wof_index "github.com/whosonfirst/go-whosonfirst-index"
 	"github.com/whosonfirst/go-whosonfirst-index/utils"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"github.com/whosonfirst/go-whosonfirst-markdown"
 	"github.com/whosonfirst/go-whosonfirst-markdown/parser"
-	"github.com/whosonfirst/go-whosonfirst-markdown/search"
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite-markdown/tables"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/index"
-	"log"
+	// golog "log"
+	"runtime"
+	"strings"
 )
 
 func main() {

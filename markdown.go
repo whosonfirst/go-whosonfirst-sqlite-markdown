@@ -5,7 +5,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 )
 
-type DocumentsTable interface {
+type MarkdownTable interface {
 	sqlite.Table
 	IndexDocument(sqlite.Database, md.Document) error
 }

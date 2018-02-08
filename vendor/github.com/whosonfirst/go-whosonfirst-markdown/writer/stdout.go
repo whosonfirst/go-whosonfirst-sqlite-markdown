@@ -11,7 +11,6 @@ type StdoutWriter struct {
 }
 
 func NewStdoutWriter() (Writer, error) {
-
 	w := StdoutWriter{}
 	return &w, nil
 }

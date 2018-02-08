@@ -7,10 +7,11 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite-markdown"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
+	"strings"
 )
 
-type DocumentsSearchTables struct {
-	markdown.DocumentsSearchTable
+type DocumentsSearchTable struct {
+	markdown.MarkdownTable
 	name string
 }
 
@@ -49,7 +50,7 @@ func (t *DocumentsSearchTable) Schema() string {
 	schema := `CREATE VIRTUAL TABLE %s USING fts4(id, title, category, body, code);`
 
 	// this is a bit stupid really... (20170901/thisisaaronland)
-	return fmt.Sprintf(sql, t.Name())
+	return fmt.Sprintf(schema, t.Name())
 }
 
 func (t *DocumentsSearchTable) InitializeTable(db sqlite.Database) error {
@@ -58,15 +59,15 @@ func (t *DocumentsSearchTable) InitializeTable(db sqlite.Database) error {
 }
 
 func (t *DocumentsSearchTable) IndexRecord(db sqlite.Database, i interface{}) error {
-	return t.IndexDocument(db, i.(md.Document))
+	return t.IndexDocument(db, i.(*md.Document))
 }
 
-func (t *DocumentsSearchTable) IndexDocument(db sqlite.Database, doc md.Document) error {
+func (t *DocumentsSearchTable) IndexDocument(db sqlite.Database, doc *md.Document) error {
 
 	search_doc, err := search.NewSearchDocument(doc)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	conn, err := db.Conn()

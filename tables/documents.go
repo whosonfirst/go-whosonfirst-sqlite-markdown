@@ -7,10 +7,11 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite-markdown"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
+	"strings"
 )
 
-type DocumentsTables struct {
-	markdown.DocumentsTable
+type DocumentsTable struct {
+	markdown.MarkdownTable
 	name string
 }
 
@@ -60,7 +61,7 @@ func (t *DocumentsTable) Schema() string {
 	`
 
 	// this is a bit stupid really... (20170901/thisisaaronland)
-	return fmt.Sprintf(sql, t.Name(), t.Name(), t.Name(), t.Name())
+	return fmt.Sprintf(schema, t.Name(), t.Name(), t.Name(), t.Name())
 }
 
 func (t *DocumentsTable) InitializeTable(db sqlite.Database) error {
@@ -69,15 +70,15 @@ func (t *DocumentsTable) InitializeTable(db sqlite.Database) error {
 }
 
 func (t *DocumentsTable) IndexRecord(db sqlite.Database, i interface{}) error {
-	return t.IndexDocument(db, i.(md.Document))
+	return t.IndexDocument(db, i.(*md.Document))
 }
 
-func (t *DocumentsTable) IndexDocument(db sqlite.Database, doc md.Document) error {
+func (t *DocumentsTable) IndexDocument(db sqlite.Database, doc *md.Document) error {
 
 	search_doc, err := search.NewSearchDocument(doc)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	conn, err := db.Conn()

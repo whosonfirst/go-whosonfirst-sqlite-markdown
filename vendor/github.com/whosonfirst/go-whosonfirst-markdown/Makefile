@@ -12,7 +12,6 @@ self:   prep
 	cp -r parser src/github.com/whosonfirst/go-whosonfirst-markdown/
 	cp -r render src/github.com/whosonfirst/go-whosonfirst-markdown/
 	cp -r search src/github.com/whosonfirst/go-whosonfirst-markdown/
-	cp -r utils src/github.com/whosonfirst/go-whosonfirst-markdown/
 	cp -r writer src/github.com/whosonfirst/go-whosonfirst-markdown/
 	cp *.go src/github.com/whosonfirst/go-whosonfirst-markdown/
 	cp -r vendor/* src/
@@ -43,13 +42,12 @@ fmt:
 	go fmt parser/*.go
 	go fmt render/*.go
 	go fmt search/*.go
-	go fmt utils/*.go
 	go fmt writer/*.go
 	go fmt *.go
 
 bin: 	rmdeps self
 	rm -rf bin/*
-	@GOPATH=$(shell pwd) go build -o bin/wof-markdown-parse cmd/wof-markdown-parse.go
+	@GOPATH=$(shell pwd) go build -o bin/wof-mdparse cmd/wof-mdparse.go
 	@GOPATH=$(shell pwd) go build -o bin/wof-md2feed cmd/wof-md2feed.go	
 	@GOPATH=$(shell pwd) go build -o bin/wof-md2html cmd/wof-md2html.go
 	@GOPATH=$(shell pwd) go build -o bin/wof-md2idx cmd/wof-md2idx.go

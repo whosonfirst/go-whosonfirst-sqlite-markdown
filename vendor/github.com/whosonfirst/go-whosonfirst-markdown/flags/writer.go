@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/whosonfirst/go-whosonfirst-markdown/writer"
+	_ "log"
 	"strings"
 )
 

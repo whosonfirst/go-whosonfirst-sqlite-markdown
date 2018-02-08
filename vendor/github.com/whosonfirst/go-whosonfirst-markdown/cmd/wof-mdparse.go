@@ -9,9 +9,9 @@ import (
 
 func main() {
 
-	var frontmatter = flag.Bool("frontmatter", false, "...")
-	var body = flag.Bool("body", false, "...")
-	var all = flag.Bool("all", false, "...")
+	var frontmatter = flag.Bool("frontmatter", false, "Dump (Jekyll) frontmatter")
+	var body = flag.Bool("body", false, "Dump (Markdown) body")
+	var all = flag.Bool("all", false, "Dump both frontmatter and body")
 
 	flag.Parse()
 

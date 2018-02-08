@@ -135,11 +135,11 @@ func main() {
 	var mode = flag.String("mode", "files", "Valid modes are: files, directory")
 	var input = flag.String("input", "index.md", "What you expect the input Markdown file to be called")
 	var output = flag.String("output", "index.html", "What you expect the output HTML file to be called")
-	var header = flag.String("header", "", "The path to a custom (Go) template to use as header for your HTML output")
-	var footer = flag.String("footer", "", "The path to a custom (Go) template to use as a footer for your HTML output")
+	var header = flag.String("header", "", "The name of the (Go) template to use as a custom header")
+	var footer = flag.String("footer", "", "The name of the (Go) template to use as a custom footer")
 
 	var templates flags.HTMLTemplateFlags
-	flag.Var(&templates, "templates", "One or more templates to parse in addition to -header and -footer")
+	flag.Var(&templates, "templates", "One or more directories containing (Go) templates to parse")
 
 	var writers flags.WriterFlags
 	flag.Var(&writers, "writer", "One or more writer to output rendered Markdown to. Valid writers are: fs=PATH; null; stdout")

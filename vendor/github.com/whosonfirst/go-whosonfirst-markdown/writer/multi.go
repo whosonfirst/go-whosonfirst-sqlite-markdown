@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
+	_ "log"
 )
 
 type nopCloser struct {

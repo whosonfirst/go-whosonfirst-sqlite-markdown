@@ -9,8 +9,8 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
 )
 
-type DocumentsAuthorsTables struct {
-	markdown.DocumentsAuthorsTable
+type DocumentsAuthorsTable struct {
+	markdown.MarkdownTable
 	name string
 }
 
@@ -56,7 +56,7 @@ func (t *DocumentsAuthorsTable) Schema() string {
 	CREATE INDEX %s_by_date ON %s (author, date);	`
 
 	// this is a bit stupid really... (20170901/thisisaaronland)
-	return fmt.Sprintf(sql, t.Name(), t.Name(), t.Name(), t.Name(), t.Name())
+	return fmt.Sprintf(schema, t.Name(), t.Name(), t.Name(), t.Name(), t.Name())
 }
 
 func (t *DocumentsAuthorsTable) InitializeTable(db sqlite.Database) error {
@@ -65,15 +65,15 @@ func (t *DocumentsAuthorsTable) InitializeTable(db sqlite.Database) error {
 }
 
 func (t *DocumentsAuthorsTable) IndexRecord(db sqlite.Database, i interface{}) error {
-	return t.IndexDocument(db, i.(md.Document))
+	return t.IndexDocument(db, i.(*md.Document))
 }
 
-func (t *DocumentsAuthorsTable) IndexDocument(db sqlite.Database, doc md.Document) error {
+func (t *DocumentsAuthorsTable) IndexDocument(db sqlite.Database, doc *md.Document) error {
 
 	search_doc, err := search.NewSearchDocument(doc)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	conn, err := db.Conn()

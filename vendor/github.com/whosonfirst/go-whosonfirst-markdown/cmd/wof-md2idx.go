@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"flag"
 	"github.com/whosonfirst/go-whosonfirst-crawl"
 	"github.com/whosonfirst/go-whosonfirst-markdown"
@@ -11,7 +12,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-markdown/jekyll"
 	"github.com/whosonfirst/go-whosonfirst-markdown/parser"
 	"github.com/whosonfirst/go-whosonfirst-markdown/render"
-	"github.com/whosonfirst/go-whosonfirst-markdown/utils"
+	"github.com/whosonfirst/go-whosonfirst-markdown/writer"
 	"io"
 	"log"
 	"os"
@@ -127,6 +128,8 @@ func RenderPosts(ctx context.Context, root string, posts []*jekyll.FrontMatter, 
 		return nil
 	default:
 
+		// PLEASE MOVE THIS SOMEWHERE ELSE
+
 		tm := `{{ range $fm := .Posts }}
 ### [{{ $fm.Title }}]({{ $fm.Permalink }})
 
@@ -199,7 +202,14 @@ func RenderPosts(ctx context.Context, root string, posts []*jekyll.FrontMatter, 
 			return err
 		}
 
-		return utils.WriteHTML(html, root, opts)
+		w := ctx.Value("writer").(writer.Writer)
+
+		if w == nil {
+			return errors.New("Can't load writer from context")
+		}
+
+		out_path := filepath.Join(root, opts.Output)
+		return w.Write(out_path, html)
 	}
 }
 
@@ -254,16 +264,22 @@ func main() {
 
 	var input = flag.String("input", "index.md", "What you expect the input Markdown file to be called")
 	var output = flag.String("output", "index.html", "What you expect the output HTML file to be called")
-	var header = flag.String("header", "", "The path to a custom (Go) template to use as header for your HTML output")
-	var footer = flag.String("footer", "", "The path to a custom (Go) template to use as a footer for your HTML output")
+	var header = flag.String("header", "", "The name of the (Go) template to use as a custom header")
+	var footer = flag.String("footer", "", "The name of the (Go) template to use as a custom footer")
 
 	var templates flags.HTMLTemplateFlags
-	flag.Var(&templates, "templates", "One or more templates to parse in addition to -header and -footer")
+	flag.Var(&templates, "templates", "One or more directories containing (Go) templates to parse")
 
-	// var writers flags.WriterFlags
-	// flag.Var(&writers, "writer", "One or more writer to output rendered Markdown to. Valid writers are: fs=PATH; null; stdout")
+	var writers flags.WriterFlags
+	flag.Var(&writers, "writer", "One or more writer to output rendered Markdown to. Valid writers are: fs=PATH; null; stdout")
 
 	flag.Parse()
+
+	wr, err := writers.ToWriter()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	t, err := templates.Parse()
 
@@ -278,7 +294,10 @@ func main() {
 	opts.Footer = *footer
 	opts.Templates = t
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "writer", wr)
+
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	for _, path := range flag.Args() {
