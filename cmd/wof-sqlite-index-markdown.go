@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	wof_index "github.com/whosonfirst/go-whosonfirst-index"
-	"github.com/whosonfirst/go-whosonfirst-index/utils"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"github.com/whosonfirst/go-whosonfirst-markdown"
 	"github.com/whosonfirst/go-whosonfirst-markdown/parser"
@@ -13,7 +12,9 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite-markdown/tables"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/index"
+	"io"
 	// golog "log"
+	"os"
 	"runtime"
 	"strings"
 )
@@ -22,6 +23,8 @@ func main() {
 
 	valid_modes := strings.Join(wof_index.Modes(), ",")
 	desc_modes := fmt.Sprintf("The mode to use importing data. Valid modes are: %s.", valid_modes)
+
+	mode := flag.String("mode", "files", desc_modes)
 
 	driver := flag.String("driver", "sqlite3", "")
 	var dsn = flag.String("dsn", "index.db", "")
@@ -39,6 +42,11 @@ func main() {
 	flag.Parse()
 
 	runtime.GOMAXPROCS(*procs)
+
+	logger := log.SimpleWOFLogger()
+
+	stdout := io.Writer(os.Stdout)
+	logger.AddLogger(stdout, "status")
 
 	db, err := database.NewDBWithDriver(*driver, *dsn)
 
@@ -107,7 +115,7 @@ func main() {
 
 	cb := func(ctx context.Context, fh io.Reader, args ...interface{}) (interface{}, error) {
 
-		path, err := utils.PathFromContext(ctx)
+		path, err := wof_index.PathForContext(ctx)
 
 		if err != nil {
 			return nil, err
@@ -124,7 +132,7 @@ func main() {
 		doc, err := markdown.NewDocument(fm, b)
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal("failed to create new MD document because %s", err)
 		}
 
 		return doc, nil
@@ -146,54 +154,4 @@ func main() {
 	}
 
 	os.Exit(0)
-
-	//
-
-	idx, err := sqlite.NewSQLiteIndexer(*dsn)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	opts := parser.DefaultParseOptions()
-
-	for _, path := range flag.Args() {
-
-		fm, b, err := parser.ParseFile(path, opts)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		doc, err := markdown.NewDocument(fm, b)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		search_doc, err := idx.IndexDocument(doc)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		log.Println("INDEX", path, search_doc.Title)
-	}
-
-	if *q != "" {
-
-		query, err := search.NewDefaultSearchQuery(*q)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		r, err := idx.Query(query)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		log.Println(r)
-	}
 }
