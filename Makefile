@@ -42,3 +42,4 @@ fmt:
 bin: 	rmdeps self
 	rm -rf bin/*
 	@GOPATH=$(shell pwd) go build -o bin/wof-sqlite-index-markdown cmd/wof-sqlite-index-markdown.go
+	@GOPATH=$(shell pwd) go build -o bin/wof-sqlite-query-markdown cmd/wof-sqlite-query-markdown.go
