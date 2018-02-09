@@ -82,6 +82,20 @@ func (t *DocumentsSearchTable) IndexDocument(db sqlite.Database, doc *md.Documen
 		return err
 	}
 
+	s, err := tx.Prepare("DELETE FROM documents_search WHERE id = ?")
+
+	if err != nil {
+		return err
+	}
+
+	defer s.Close()
+
+	_, err = s.Exec(search_doc.Id)
+
+	if err != nil {
+		return err
+	}
+
 	str_body := strings.Join(search_doc.Body, " ")
 	str_code := strings.Join(search_doc.Code, " ")
 
