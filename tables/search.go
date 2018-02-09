@@ -7,6 +7,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-sqlite"
 	"github.com/whosonfirst/go-whosonfirst-sqlite-markdown"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
+	_ "log"
 	"strings"
 )
 

@@ -16,6 +16,7 @@ func main() {
 	var dsn = flag.String("dsn", "index.db", "")
 
 	var table = flag.String("table", "documents_search", "")
+	var col = flag.String("column", "body", "")
 
 	flag.Parse()
 
@@ -32,8 +33,6 @@ func main() {
 
 	defer db.Close()
 
-	// rows, err := search.Query(db, sql, q)
-
 	conn, err := db.Conn()
 
 	if err != nil {
@@ -42,8 +41,7 @@ func main() {
 
 	q := strings.Join(flag.Args(), " ")
 
-	sql := fmt.Sprintf("SELECT id FROM %s WHERE body MATCH ?", *table)
-
+	sql := fmt.Sprintf("SELECT id FROM %s WHERE %s MATCH ?", *table, *col)
 	rows, err := conn.Query(sql, q)
 
 	if err != nil {
