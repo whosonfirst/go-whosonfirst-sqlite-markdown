@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"github.com/whosonfirst/go-whosonfirst-sqlite/database"
-	"github.com/whosonfirst/go-whosonfirst-sqlite/utils"
 	"io"
 	"os"
 	"strings"
@@ -33,15 +32,7 @@ func main() {
 
 	defer db.Close()
 
-	ok, err := utils.HasTable(db, *table)
-
-	if err != nil {
-		logger.Fatal("unable to test for table (%s) because %s", *table, err)
-	}
-
-	if !ok {
-		logger.Fatal("database is missing table (%s)", *table)
-	}
+	// rows, err := search.Query(db, sql, q)
 
 	conn, err := db.Conn()
 
